@@ -1,6 +1,5 @@
+package figures;
 //wrapper class for a list of figures
-
-import figures.Figure;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;

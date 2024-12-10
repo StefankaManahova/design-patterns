@@ -3,6 +3,7 @@
 import factories.AbstractFactory;
 import factories.FigureFactory;
 import figures.Figure;
+import figures.FigureList;
 
 import java.util.Locale;
 import java.util.Scanner;

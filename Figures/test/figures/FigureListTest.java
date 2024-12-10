@@ -1,3 +1,5 @@
+package figures;
+
 import figures.Circle;
 import figures.Rectangle;
 import figures.Triangle;
