@@ -18,7 +18,7 @@ public class StreamFigureFactoryTest
     @DisplayName("Test creating figures from a file stream")
     public void readFromFile()
     {
-        try (FileInputStream in = new FileInputStream("test/utils/test_figures.txt"))
+        try (FileInputStream in = new FileInputStream("Figures/test/utils/test_figures.txt"))
         {
             StreamFigureFactory factory = new StreamFigureFactory(in);
 
@@ -48,7 +48,7 @@ public class StreamFigureFactoryTest
     @DisplayName("Test creating invalid figures from a file stream")
     public void readInvalidFromFile()
     {
-        try (FileInputStream in = new FileInputStream("test/utils/invalid_figures.txt"))
+        try (FileInputStream in = new FileInputStream("Figures/test/utils/invalid_figures.txt"))
         {
             StreamFigureFactory factory = new StreamFigureFactory(in);
 

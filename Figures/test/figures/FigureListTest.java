@@ -70,11 +70,11 @@ public class FigureListTest
         list.add( new Circle(3.5));
         list.add( new Rectangle(4.8, 9.3));
 
-        String[] args = {"save", "test/utils/saved_figures.txt"};
+        String[] args = {"save", "Figures/test/utils/saved_figures.txt"};
         list.save(args);
 
         try (BufferedReader in = new BufferedReader(new InputStreamReader
-                            (new FileInputStream("test/utils/saved_figures.txt"))))
+                            (new FileInputStream(args[1]))))
         {
             String s;
             StringBuilder res = new StringBuilder();

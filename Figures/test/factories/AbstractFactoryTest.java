@@ -55,7 +55,7 @@ public class AbstractFactoryTest
 
         try
         {
-            FigureFactory factory = abstractFactory.createFactory("File test/utils/test_figures.txt");
+            FigureFactory factory = abstractFactory.createFactory("File Figures/test/utils/test_figures.txt");
 
             assertEquals(factory.getClass(), StreamFigureFactory.class);
 
@@ -72,7 +72,7 @@ public class AbstractFactoryTest
 
         try
         {
-            FigureFactory factory = abstractFactory.createFactory("File test/utils/test_figures.txt");
+            FigureFactory factory = abstractFactory.createFactory("File Figures/test/utils/test_figures.txt");
 
             Figure fig = factory.create();
 
