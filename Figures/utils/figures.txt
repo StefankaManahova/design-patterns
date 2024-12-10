@@ -1,0 +1,5 @@
+rectangle 4,00 5,00
+triangle 2,00 3,00 4,00
+triangle 2,00 3,00 4,00
+circle 2,00
+rectangle 4,00 5,00

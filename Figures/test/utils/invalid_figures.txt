@@ -1,0 +1,6 @@
+circle 9
+rectangle a 6
+triangle 1 2 3
+circle -8
+rectangle 7
+rectangle 1 2
