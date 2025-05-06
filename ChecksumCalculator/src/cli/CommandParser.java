@@ -31,7 +31,7 @@ public class CommandParser
             .desc("Specify a file name where the result will be saved; if missing the result is printed on the standard output").build();
     static Option formatOption = Option.builder().option("f").longOpt("format").hasArg().required(false)
             .desc("Specify the format of the report (xml or simple/simple-text); default value is simple-text").build();
-    static Option diffOption = Option.builder().option("d").longOpt("--diff").hasArg(false).required(false)
+    static Option diffOption = Option.builder().option("d").longOpt("diff").hasArg(false).required(false)
             .desc("Include only new, deleted or modified files in the report").build();
 
 
