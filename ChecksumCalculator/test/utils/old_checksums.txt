@@ -1,0 +1,17 @@
+<checksums>
+	<item>
+		<checksum>eb844884dd4ce9754756dd8ced9d1bf8</checksum>
+		<path>test\res_for_modification\pack\4.txt</path>
+		<size>90</size>
+	</item>
+	<item>
+		<checksum>a5ec2b71ae48f36f5481f0f952805065</checksum>
+		<path>test\res_for_modification\2.txt</path>
+		<size>49</size>
+	</item>
+	<item>
+		<checksum>dc1872e34ef29ad0cafb17989bb054cc</checksum>
+		<path>test\res_for_modification\1.txt</path>
+		<size>26</size>
+	</item>
+</checksums>
