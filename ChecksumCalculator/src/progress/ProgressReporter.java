@@ -33,6 +33,15 @@ public class ProgressReporter implements Observer
             first = false;
         }
         int percentage = (int)(100.0 * processedBytes / totalBytes);
+        // Save cursor, move to top line, write bar, then restore cursor
+        /*System.out.print("\0337"); // Save cursor position
+        System.out.print("\033[s"); // Another save for safety
+        System.out.print("\033[2d"); // Move up (top of console)
+        System.out.print("\033[K"); // Move up (top of console)
+        System.out.print("\033[1d"); // Move up (top of console)
+        System.out.printf("\r\033[K Progress: %d%%   Processing file " + currentFile + "...", percentage);
+        System.out.print("\033[u"); // Restore cursor
+        System.out.flush();*/
         System.out.printf("\rProgress: %d%%   Processing file " + currentFile + "...", percentage);
     }
 }

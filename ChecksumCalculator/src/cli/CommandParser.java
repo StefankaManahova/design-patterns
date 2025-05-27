@@ -1,21 +1,9 @@
 package cli;
 
-import algorithms.*;
-import fileTree.BaseFile;
-import fileTree.FileTreeBuilder;
-import formats.ChecksumFile;
-import formats.ChecksumFileUtils;
 import org.apache.commons.cli.*;
-import progress.ProgressReporter;
-import visitors.HashStreamWriter;
-import visitors.ReportWriter;
+import org.apache.commons.text.StringTokenizer;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
-
-import org.apache.commons.text.*;
 
 public class CommandParser
 {
@@ -34,8 +22,7 @@ public class CommandParser
     static Option diffOption = Option.builder().option("d").longOpt("diff").hasArg(false).required(false)
             .desc("Include only new, deleted or modified files in the report").build();
 
-
-    public void execute(String input) throws IOException, IllegalArgumentException, RuntimeException
+    public static Command parse(String input) throws RuntimeException
     {
         //parsing the input
         StringTokenizer tokenizer = new StringTokenizer(input, ' ', '\"');
@@ -44,28 +31,26 @@ public class CommandParser
         Options calcOptions = createCalcOptions();
         Options verifOptions = createVerifOptions();
 
-        HelpFormatter fmt = new HelpFormatter();
-
-        if (checkForHelp(args))
+        if (hasHelp(args))
         {
+            HelpFormatter fmt = new HelpFormatter();
+
             if (args[0].equalsIgnoreCase("calculate") || args[0].equalsIgnoreCase("calc"))
             {
-                fmt.printHelp("calculate --path path --algorithm alg --format format -- result res", calcOptions);
-                return;
+                fmt.printHelp("calculate --path path --algorithm alg --format format --result res", calcOptions);
             }
             else if (args[0].equalsIgnoreCase("verify"))
             {
                 fmt.printHelp("verify --path path --algorithm alg --checksums checksum_file --result res", verifOptions);
-                return;
             }
             else
             {
                 System.out.println("The following commands are supported:");
-                fmt.printHelp("calculate --path path --algorithm alg --format format -- result res", calcOptions);
+                fmt.printHelp("calculate --path path --algorithm alg --format format --result res", calcOptions);
                 fmt.printHelp("verify --path path --algorithm alg --checksums checksum_file --result res", verifOptions);
                 System.out.println("usage: exit/quit\nexit/quit: exit the app");
-                return;
             }
+            return null;
         }
 
         CommandLineParser parser = new DefaultParser();
@@ -77,117 +62,95 @@ public class CommandParser
             if (args[0].equalsIgnoreCase("calculate") || args[0].equalsIgnoreCase("calc"))
             {
                 cmdLine = parser.parse(calcOptions, args);
+
+                return parseCalculateCommand(cmdLine);
             }
             else if (args[0].equalsIgnoreCase("verify"))
             {
                 cmdLine = parser.parse(verifOptions, args);
+
+                return parseVerifyCommand(cmdLine);
             }
             else
             {
                 throw new IllegalArgumentException("Unrecognised command. Try --help or -h for help.");
             }
-
-            String algorithm = cmdLine.getOptionValue(algOption.getOpt()).trim().toLowerCase();
-
-            String path = ".";
-            if (cmdLine.hasOption(pathOption.getOpt()))
-            {
-                path = cmdLine.getOptionValue("path").trim();
-            }
-
-            String checksums = "";
-            if (cmdLine.hasOption(verifOption.getOpt()))
-            {
-                checksums = cmdLine.getOptionValue("checksums").trim();
-            }
-
-            String result = "";
-            if (cmdLine.hasOption(saveOption.getOpt()))
-            {
-                result = cmdLine.getOptionValue("result").trim();
-            }
-
-            String format = "simple";
-            if (cmdLine.hasOption(formatOption.getOpt()))
-            {
-                format = cmdLine.getOptionValue("format").trim().toLowerCase();
-            }
-
-            boolean onlyDiff = cmdLine.hasOption(diffOption.getOpt());
-
-            //executing the command
-            executeHelper(algorithm, path, format, checksums, result, onlyDiff);
-
         } catch (ParseException e) {
             throw new RuntimeException(e.getMessage() + "\nTry --help or -h for help.");
         }
     }
 
-    public void executeHelper(String algorithm, String path, String formatStr, String checksums,
-                         String resName, boolean onlyDiff) throws IllegalArgumentException, IOException
-    {
-        ChecksumCalculator calc = CalculatorUtils.getCalc(algorithm);
-
-        BaseFile root = FileTreeBuilder.buildTreeFrom(path);
-        String res;
-
-        if (checksums.isEmpty())
-        {
-            ChecksumFile format = ChecksumFileUtils.getFormat(formatStr);
-
-            HashStreamWriter writer = new HashStreamWriter(calc, format);
-
-            ProgressReporter progress = new ProgressReporter();
-            writer.addSubscriber(progress);
-
-            res = writer.calculateChecksums(root);
-        }
-        else
-        {
-            File oldChecksums = new File(checksums);
-
-            ReportWriter writer = new ReportWriter(calc);
-
-            ProgressReporter progress = new ProgressReporter();
-            writer.addSubscriber(progress);
-
-            res = writer.reportModifications(root, oldChecksums, onlyDiff);
-        }
-
-        if (resName.isEmpty())
-        {
-            System.out.println();
-            System.out.println(res);
-        }
-        else
-        {
-            FileOutputStream out = new FileOutputStream(resName);
-            out.write(res.getBytes());
-            out.close();
-
-            System.out.println("\nResult saved in " + resName);
-        }
-    }
-
-    private Options createCalcOptions()
+    private static Options createCalcOptions()
     {
         Options calcOptions = new Options();
         calcOptions.addOption(algOption).addOption(pathOption).addOption(saveOption)
-                    .addOption(formatOption).addOption(helpOption);
+                .addOption(formatOption).addOption(helpOption);
 
         return calcOptions;
     }
 
-    private Options createVerifOptions()
+    private static Options createVerifOptions()
     {
         Options verifOptions = new Options();
         verifOptions.addOption(algOption).addOption(pathOption).addOption(saveOption)
-                    .addOption(verifOption).addOption(diffOption).addOption(helpOption);
+                .addOption(verifOption).addOption(diffOption).addOption(helpOption);
 
         return verifOptions;
     }
 
-    private static boolean checkForHelp(String[] args) throws RuntimeException
+    private static Command parseCalculateCommand(CommandLine cmdLine)
+    {
+        String algorithm = cmdLine.getOptionValue(algOption.getOpt()).trim().toLowerCase();
+
+        String path = ".";
+        if (cmdLine.hasOption(pathOption.getOpt()))
+        {
+            path = cmdLine.getOptionValue("path").trim();
+        }
+
+        String result = "";
+        if (cmdLine.hasOption(saveOption.getOpt()))
+        {
+            result = cmdLine.getOptionValue("result").trim();
+        }
+
+        String format = "simple";
+        if (cmdLine.hasOption(formatOption.getOpt()))
+        {
+            format = cmdLine.getOptionValue("format").trim().toLowerCase();
+        }
+
+        return new CalculateCommand(algorithm, path, format, result);
+    }
+
+    private static Command parseVerifyCommand(CommandLine cmdLine)
+    {
+        String algorithm = cmdLine.getOptionValue(algOption.getOpt()).trim().toLowerCase();
+
+        String path = ".";
+        if (cmdLine.hasOption(pathOption.getOpt()))
+        {
+            path = cmdLine.getOptionValue("path").trim();
+        }
+
+        String result = "";
+        if (cmdLine.hasOption(saveOption.getOpt()))
+        {
+            result = cmdLine.getOptionValue("result").trim();
+        }
+
+        String checksums = "";
+        if (cmdLine.hasOption(verifOption.getOpt()))
+        {
+            checksums = cmdLine.getOptionValue("checksums").trim();
+        }
+
+        boolean onlyDiff = cmdLine.hasOption(diffOption.getOpt());
+
+        return new VerifyCommand(algorithm, path, checksums, result, onlyDiff);
+    }
+
+    private static boolean hasHelp(String[] args) throws RuntimeException
     {
         boolean hasHelp = false;
         Options options = new Options();

@@ -3,25 +3,27 @@ package cli;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
-public class CommandParserMode2Test
+public class VerifyCommandTest
 {
-
     @Test
     @DisplayName("Test verification mode")
     public void testVerification() {
-        CommandParser parser = new CommandParser();
-
         String input = "calc --path test\\res_for_modification --algorithm md5 --format xml --result test\\utils_2\\old_checksums.txt";
+        Command command = CommandParser.parse(input);
+        assert(command != null);
+
         try {
             //save checksums in file old_checksums.txt
-            parser.execute(input);
+            command.run();
 
             //make changes
             FileOutputStream out = new FileOutputStream("test\\res_for_modification\\3.txt");
@@ -46,7 +48,7 @@ public class CommandParserMode2Test
 
             //report modifications
             input = "verify --path test\\res_for_modification --algorithm md5 --checksums test\\utils_2\\old_checksums.txt --result test\\utils_2\\new_checksums.txt";
-            parser.execute(input);
+            command = CommandParser.parse(input);
 
             StringBuilder modifications = new StringBuilder();
             FileInputStream inputStream = new FileInputStream("test\\utils_2\\new_checksums.txt");
@@ -104,10 +106,10 @@ public class CommandParserMode2Test
 
     @Test
     @DisplayName("Incorrect checksums file")
-    public void testIncorrectInputCalc6() {
-        CommandParser parser = new CommandParser();
+    public void testIncorrectInputCalc() {
         String input = "verify --path test\\res_for_modification --algorithm md5 --checksums src\\fileTree\\BaseFile.java";
-
-        assertThrows(IllegalArgumentException.class, () -> parser.execute(input));
+        Command command = CommandParser.parse(input);
+        assert(command != null);
+        assertThrows(RuntimeException.class, command::run);
     }
 }

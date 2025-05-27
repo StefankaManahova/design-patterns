@@ -6,11 +6,11 @@ public class App
 {
     public void run()
     {
-        CommandParser parser = new CommandParser();
         Scanner sc = new Scanner(System.in);
 
         while (true)
         {
+            //System.out.print("\033[5d\r> "); // Set cursor to the command line
             System.out.print("> ");
             String input = sc.nextLine();
 
@@ -23,7 +23,12 @@ public class App
 
             try
             {
-                parser.execute(input);
+                Command command = CommandParser.parse(input);
+
+                if (command != null)
+                {
+                    command.run();
+                }
             } catch (Exception ex)
             {
                 System.out.println(ex.toString());
