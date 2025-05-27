@@ -1,0 +1,5 @@
+test\res_for_modification\1.txt: MODIFIED
+test\res_for_modification\pack\4.txt: MODIFIED
+test\res_for_modification\2.txt: OK
+test\res_for_modification\pack\5.txt: NEW
+test\res_for_modification\3.txt: NEW
